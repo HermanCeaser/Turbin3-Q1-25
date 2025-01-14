@@ -1,3 +1,6 @@
 [submodule "airdrop"]
 	path = airdrop
 	url = https://github.com/HermanCeaser/turbin3-preq-one.git
+[submodule "airdrop-rust"]
+	path = airdrop-rust
+	url = https://github.com/HermanCeaser/turbin3-preq-two.git
