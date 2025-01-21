@@ -1,7 +1,10 @@
-use anchor_lang::{prelude::*, system_program::{transfer, Transfer}};
+use anchor_lang::{
+    prelude::*,
+    system_program::{transfer, Transfer},
+};
 
 declare_id!("2VbBzRU1xv9G599Uoa4TBLPqzua3EkccmeTcMxEFxezw");
-const ANCHOR_DISCRIMINATOR:usize = 8;
+const ANCHOR_DISCRIMINATOR: usize = 8;
 
 #[program]
 pub mod vault {
@@ -43,13 +46,13 @@ pub struct Initialize<'info> {
         init,
         payer=signer,
         space=VaultState::INIT_SPACE + ANCHOR_DISCRIMINATOR,
-        seeds = [b"state", signer.key().as_ref()],
+        seeds=[b"state", signer.key().as_ref()],
         bump
     )]
     pub vault_state: Account<'info, VaultState>,
     #[account(seeds=[vault_state.key().as_ref()], bump)]
     pub vault: SystemAccount<'info>,
-    pub system_program: Program<'info, System>
+    pub system_program: Program<'info, System>,
 }
 
 impl<'info> Initialize<'info> {
@@ -59,7 +62,6 @@ impl<'info> Initialize<'info> {
         Ok(())
     }
 }
-
 
 #[derive(Accounts)]
 pub struct Deposit<'info> {
@@ -73,13 +75,13 @@ pub struct Deposit<'info> {
     pub vault_state: Account<'info, VaultState>,
     #[account(seeds=[vault_state.key().as_ref()], bump)]
     pub vault: SystemAccount<'info>,
-    pub system_program: Program<'info, System>
+    pub system_program: Program<'info, System>,
 }
 
 impl<'info> Deposit<'info> {
     pub fn deposit(&mut self, amount: u64) -> Result<()> {
         let system_program = self.system_program.to_account_info();
-        let accounts = Transfer{
+        let accounts = Transfer {
             from: self.signer.to_account_info(),
             to: self.vault.to_account_info(),
         };
@@ -106,7 +108,7 @@ pub struct Withdraw<'info> {
         bump
     )]
     pub vault: SystemAccount<'info>,
-    pub system_program: Program<'info, System>
+    pub system_program: Program<'info, System>,
 }
 
 impl<'info> Withdraw<'info> {
