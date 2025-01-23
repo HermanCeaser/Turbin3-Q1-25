@@ -3,7 +3,7 @@ import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
 import { Escrow } from "../target/types/escrow";
 import { getAssociatedTokenAddressSync, TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID } from "@solana/spl-token";
-import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
+import { LAMPORTS_PER_SOL, PublicKey, SendTransactionError } from "@solana/web3.js";
 import { confirmTransaction, createAccountsMintsAndTokenAccounts, makeKeypairs } from "@solana-developers/helpers";
 import { assert } from "chai";
 
@@ -31,15 +31,15 @@ describe("escrow", () => {
   [ceaser, bob, mintA, mintB] = makeKeypairs(4);
 
   const mintAOfferedAmount = new anchor.BN(1_000_000);
-  
+
   before("Creates Ceaser and Bob Accounts, 2 token mints and associated token accounts for both tokens for both users",
-    async()=>{
-      const {users, mints, tokenAccounts} = await createAccountsMintsAndTokenAccounts(
+    async () => {
+      const { users, mints, tokenAccounts } = await createAccountsMintsAndTokenAccounts(
         [
           // Ceaser's token balances, 1,000,000,000 of mintA & 0 of mintB
           [1_000_000_000, 0],
           // bobs's token balances, 0 of mintA & 1,000,000,000 of mintB
-          [0,1_000_000_000],
+          [0, 1_000_000_000],
         ],
         1 * LAMPORTS_PER_SOL,
         connection,
@@ -67,10 +67,10 @@ describe("escrow", () => {
       accounts.mintB = mintB.publicKey;
       accounts.makerAccountMintB = ceaserMintB // PDA for maker's token mint B
       accounts.takerAccountMintB = bobMintB // PDA for taker's token mint B
-  });
+    });
 
   it("Puts Ceaser's Tokens into Vault when he makes an Offer!", async () => {
-    
+
     const offerSeed = new anchor.BN(randomBytes(8));
 
     // Derive the account addresses we'll use for the offer and vault
@@ -90,14 +90,14 @@ describe("escrow", () => {
     accounts.offer = offer;
     accounts.vault = vault;
 
-    console.log("accounts: ", accounts);
+    // console.log("accounts: ", accounts);
 
     const tx = await program.methods
-    .makeOffer(offerSeed, mintAOfferedAmount)
-    .accounts({...accounts})
-    .signers([ceaser])
-    .rpc()
-    
+      .makeOffer(offerSeed, mintAOfferedAmount)
+      .accounts({ ...accounts })
+      .signers([ceaser])
+      .rpc()
+
     await confirmTransaction(connection, tx);
 
     // Check our vault contains the tokens offered
@@ -112,5 +112,27 @@ describe("escrow", () => {
     assert(offerAccount.mintA.equals(accounts.mintA));
     assert(offerAccount.mintB.equals(accounts.mintB));
     assert(offerAccount.receiveAmount.eq(mintAOfferedAmount));
+  });
+
+  it("sends token from vault to Bob's account and gives Ceaser Bob's tokens when Bob takes an Offer", async () => {
+    
+    const tx = await program.methods
+      .takeOffer()
+      .accounts({ ...accounts })
+      .signers([bob,])
+      .rpc();
+    const confirmed = await confirmTransaction(connection, tx);
+    console.log("Transaction signature:", confirmed);
+
+    // Check the offered tokens are now in Bob's account
+    const bobTokenAccountBalanceAfterResponse = await connection.getTokenAccountBalance(accounts.takerAccountMintA);
+    const bobTokenAccountBalanceAfter = new anchor.BN(bobTokenAccountBalanceAfterResponse.value.amount);
+    assert(bobTokenAccountBalanceAfter.eq(mintAOfferedAmount));
+
+    // Check the wanted tokens are now in Ceaser's account
+    const ceaserTokenAccountBalanceAfterResponse = await connection.getTokenAccountBalance(accounts.makerAccountMintB);
+    const ceaserTokenAccountBalanceAfter = new anchor.BN(ceaserTokenAccountBalanceAfterResponse.value.amount);
+    assert(ceaserTokenAccountBalanceAfter.eq(mintAOfferedAmount));
+
   });
 });
