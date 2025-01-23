@@ -25,4 +25,8 @@ pub mod escrow {
         ctx.accounts.send_wanted_tokens_to_maker()?;
         ctx.accounts.withdraw_and_close_vault()
     }
+
+    pub fn refund(ctx: Context<Refund>) -> Result<()> {
+        ctx.accounts.refund_and_close_vault()
+    }
 }
