@@ -29,7 +29,7 @@ pub struct Take<'info> {
         associated_token::authority=taker,
         associated_token::token_program = token_program 
     )]
-    pub taker_mint_a_ata: InterfaceAccount<'info, TokenAccount>,
+    pub taker_mint_a_ata: Box<InterfaceAccount<'info, TokenAccount>>,
 
     #[account(
         mut,
@@ -37,7 +37,7 @@ pub struct Take<'info> {
         associated_token::authority = taker,
         associated_token::token_program = token_program 
     )]
-    pub taker_mint_b_ata: InterfaceAccount<'info, TokenAccount>,
+    pub taker_mint_b_ata: Box<InterfaceAccount<'info, TokenAccount>>,
     
     #[account(
         init_if_needed,
@@ -46,7 +46,7 @@ pub struct Take<'info> {
         associated_token::authority=maker,
         associated_token::token_program = token_program 
     )]
-    pub maker_mint_b_ata: InterfaceAccount<'info, TokenAccount>,
+    pub maker_mint_b_ata: Box<InterfaceAccount<'info, TokenAccount>>,
     
     #[account(
         mut,
@@ -65,7 +65,7 @@ pub struct Take<'info> {
         associated_token::authority = offer,
         associated_token::token_program = token_program 
     )]
-    pub vault: InterfaceAccount<'info, TokenAccount>,
+    pub vault: Box<InterfaceAccount<'info, TokenAccount>>,
 
     
     pub system_program: Program<'info, System>,
