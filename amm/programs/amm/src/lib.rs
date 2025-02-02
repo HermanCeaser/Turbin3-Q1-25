@@ -15,7 +15,8 @@ declare_id!("4CLw5SQUBt7BJXzeeEoVgAcySQXJgTzt5HcNHsdWrVAh");
 pub mod amm {
     use super::*;
 
-    pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
-        initialize::handler(ctx)
+    pub fn initialize(ctx: Context<Initialize>, seed: u64, fee: u8) -> Result<()> {
+        ctx.accounts.init(seed, fee, &ctx.bumps)?;
+        Ok(())
     }
 }
