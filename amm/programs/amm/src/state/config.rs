@@ -9,8 +9,9 @@ pub struct Config {
     pub fee: u8,
     pub locked: bool,
     pub config_bump: u8,
+    pub lp_bump: u8,
 }
 
 impl Space for Config {
-    const INIT_SPACE: usize = 8 + 32 + 32 + 32 + 1 + 1 + 1;
+    const INIT_SPACE: usize = 8 + 32 + 32 + 32 + 1 + 1 + 1 + 1;
 }

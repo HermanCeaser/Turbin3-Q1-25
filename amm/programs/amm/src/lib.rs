@@ -16,7 +16,7 @@ pub mod amm {
     use super::*;
 
     pub fn initialize(ctx: Context<Initialize>, seed: u64, fee: u8) -> Result<()> {
-        ctx.accounts.init(seed, fee, &ctx.bumps)?;
+        ctx.accounts.init(seed, fee, None, &ctx.bumps)?;
         Ok(())
     }
 }
