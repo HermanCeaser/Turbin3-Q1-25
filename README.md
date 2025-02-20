@@ -15,3 +15,4 @@ A Folder that has all the turbin3 q1 2025 Prerequisite tasks.
 5. [Escrow](./escrow/) - An Escrow Program that interacts has instruction to take, make & refund tokens. It also has tests to interact with escrow program
 6. [Marketplace](./marketplace/) - A marketplace program that has instruction to initialize, list, purchase & delist tokens. It also has tests to interact with marketplace program
 7. [AMM](./amm/) - An Automated Market maker program that has instruction to initialize, deposit, purchase & withdraw tokens from the AMM.
+8. 7. [Nft staking](./nft-staking/) - An Automated NFT Staking protocol.
